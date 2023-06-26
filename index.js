@@ -1,12 +1,16 @@
 //writing code necessary for express to run and parse JSON
 import express from "express";
 import 'dotenv/config';
+import cors from 'cors';
 import * as google_tts from 'google-tts-api';
 
 
 
 let app = express();
 app.use(express.json());
+app.use(cors({
+  origin: 'https://debayangg.github.io/GPT-Bot/'
+}));
 
 //setting up the local server
 let port = 3000;
