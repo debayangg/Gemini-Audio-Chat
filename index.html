@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Input Example</title>
+</head>
+<body>
+  <button id="start-btn" style="width: 400px;height: 100px;position: absolute;top:0;bottom: 0;left: 0;right: 0;margin: auto;font-size: large;">
+    Click to start speaking
+  </button>
+  
+  <div id="result"></div>
+
+  <script>
+
+    // Check if the browser supports the Web Speech API
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      // Create a new SpeechRecognition object
+      let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+      // Set the language for speech recognition
+      recognition.lang = 'en-US';
+
+      // Define the event handler for the 'result' event
+      recognition.onresult = async (event) => {
+        let result = event.results[0][0].transcript;
+        
+        //post request to server to get response from gpt
+        await fetch(window.location.href+`./post`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({"text":result})
+        })
+
+        //handles the response from the server and converts it into audio
+        .then(res => res.json())
+        .then((res)=>{
+          let data = res.result;
+          for(let i=0;i<data.length;i++){
+            let audio = new Audio("data:audio/mp3;base64,"+data[i].base64);
+            audio.play();
+          }
+        });
+      };
+
+      // Define the event handler for the 'error' event
+      recognition.onerror = (event) => {
+        console.log('Error occurred in recognition: ' + event.error);
+      };
+
+      // Start the speech recognition when the button is clicked
+      document.getElementById('start-btn').addEventListener('click', () => {
+        recognition.start();
+      });
+      
+    } 
+    
+    else {
+      // Speech recognition not supported
+      document.getElementById('result').textContent = "Speech recognition is not supported in your browser.";
+    }
+  </script>
+</body>
+</html>
