@@ -20,6 +20,7 @@ const __dirname = process.cwd();
 
 //setting up the route for the home page
 app.get(__dirname+"/", (req,res) => {
+    console.log(__dirname+"/post");
     res.sendFile( __dirname + '/index.html');
 });
 
