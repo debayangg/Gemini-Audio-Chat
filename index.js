@@ -9,10 +9,10 @@ let app = express();
 app.use(express.json());
 
 //setting up the local server
-/*let port = 3000;
+let port = 3000;
 app.listen(port,() => {
     console.log(`Server running on port ${port}`);
-});*/
+});
 
 
 //setting up the route for the home page
