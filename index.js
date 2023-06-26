@@ -31,7 +31,100 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 //setting up the route for the post request to get output from GPT
 
+app.post(__dirname+"/post", async (req,res) => {
+    let data = req.body;
+
+    /*
+    Creates a request to openai's API to get the output from GPT-3.5-turbo
+    completion - stores json from api call
+    */
+
+    const configuration = new Configuration({
+    apiKey: OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
+    const completion = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    messages: [{"role": "system", "content": "You are a helpful assistant."}, {role: "user", content: data['text']}],
+    });
+    
+    let text = completion.data.choices[0].message['content'];
+    const urls = await google_tts.getAllAudioBase64(text, {
+        lang: 'en',
+        slow: false,
+        host: 'https://translate.google.com',
+    });
+ 
+   res.json({
+        'result': urls
+    });
+     
+    res.end();
+});
+
 app.post("/post", async (req,res) => {
+    let data = req.body;
+
+    /*
+    Creates a request to openai's API to get the output from GPT-3.5-turbo
+    completion - stores json from api call
+    */
+
+    const configuration = new Configuration({
+    apiKey: OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
+    const completion = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    messages: [{"role": "system", "content": "You are a helpful assistant."}, {role: "user", content: data['text']}],
+    });
+    
+    let text = completion.data.choices[0].message['content'];
+    const urls = await google_tts.getAllAudioBase64(text, {
+        lang: 'en',
+        slow: false,
+        host: 'https://translate.google.com',
+    });
+ 
+   res.json({
+        'result': urls
+    });
+     
+    res.end();
+});
+
+app.post(__dirname+"post", async (req,res) => {
+    let data = req.body;
+
+    /*
+    Creates a request to openai's API to get the output from GPT-3.5-turbo
+    completion - stores json from api call
+    */
+
+    const configuration = new Configuration({
+    apiKey: OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
+    const completion = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    messages: [{"role": "system", "content": "You are a helpful assistant."}, {role: "user", content: data['text']}],
+    });
+    
+    let text = completion.data.choices[0].message['content'];
+    const urls = await google_tts.getAllAudioBase64(text, {
+        lang: 'en',
+        slow: false,
+        host: 'https://translate.google.com',
+    });
+ 
+   res.json({
+        'result': urls
+    });
+     
+    res.end();
+});
+
+app.post("/", async (req,res) => {
     let data = req.body;
 
     /*
