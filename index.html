@@ -27,7 +27,7 @@
         let result = event.results[0][0].transcript;
         console.log(window.location.href+`./post`);
         //post request to server to get response from gpt
-        await fetch(window.location.href+`./`, {
+        await fetch(window.location.href+`/post`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
