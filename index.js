@@ -1,5 +1,5 @@
 //writing code necessary for express to run and parse JSON
-/*import express from "express";
+import express from "express";
 import 'dotenv/config';
 import * as google_tts from 'google-tts-api';
 
@@ -12,15 +12,15 @@ app.use(express.json());
 /*let port = 3000;
 app.listen(port,() => {
     console.log(`Server running on port ${port}`);
-});
-*/
+});*/
+
 
 //setting up the route for the home page
 const __dirname = process.cwd();
 
 //setting up the route for the home page
 app.get("/", (req,res) => {
-
+    console.log(__dirname);
     res.sendFile( __dirname + '/index.html');
 });
 
@@ -31,7 +31,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 //setting up the route for the post request to get output from GPT
 
-app.post(__dirname+"post" || "/post" || __dirname+"/post", async (req,res) => {
+app.post("/post", async (req,res) => {
     let data = req.body;
 
     /*
