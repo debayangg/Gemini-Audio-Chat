@@ -8,10 +8,7 @@ import * as google_tts from 'google-tts-api';
 
 let app = express();
 app.use(express.json());
-app.use(cors({
-  origin: 'https://debayangg.github.io/GPT-Bot/'
-}));
-
+app.use(cors());
 //setting up the local server
 let port = 3000;
 app.listen(port,() => {
@@ -20,7 +17,7 @@ app.listen(port,() => {
 
 
 //setting up the route for the home page
-const __dirname = process.cwd();
+const __dirname = "https://debayangg.github.io/GPT-Bot/";
 
 //setting up the route for the home page
 app.get("/", (req,res) => {
