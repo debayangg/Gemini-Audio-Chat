@@ -62,7 +62,7 @@ app.post(__dirname+"/post", async (req,res) => {
     res.end();
 });
 
-app.post("/post", async (req,res) => {
+app.post('/:route(post)', async (req,res) => {
     let data = req.body;
 
     /*
