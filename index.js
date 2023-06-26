@@ -8,8 +8,6 @@ import * as google_tts from 'google-tts-api';
 let app = express();
 app.use(express.json());
 
-app.lis
-
 //setting up the local server
 /*let port = 3000;
 app.listen(port,() => {
@@ -21,8 +19,8 @@ app.listen(port,() => {
 const __dirname = process.cwd();
 
 //setting up the route for the home page
-app.get(__dirname+"/", (req,res) => {
-    console.log(__dirname+"/post");
+app.get("/", (req,res) => {
+
     res.sendFile( __dirname + '/index.html');
 });
 
@@ -33,7 +31,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 //setting up the route for the post request to get output from GPT
 
-app.post(__dirname+"/" || __dirname+"/post" || "/post", async (req,res) => {
+app.post(__dirname+"post" || "/post" || __dirname+"/post", async (req,res) => {
     let data = req.body;
 
     /*

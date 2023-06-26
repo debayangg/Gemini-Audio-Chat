@@ -25,9 +25,8 @@
       // Define the event handler for the 'result' event
       recognition.onresult = async (event) => {
         let result = event.results[0][0].transcript;
-        console.log(window.location.href+`./post`);
         //post request to server to get response from gpt
-        await fetch(window.location.href+`/post`, {
+        await fetch(window.location.href+`post`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
