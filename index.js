@@ -19,7 +19,7 @@ app.listen(port,() => {
 const __dirname = process.cwd();
 
 //setting up the route for the home page
-app.get("/", (req,res) => {
+app.get(__dirname+"/", (req,res) => {
     res.sendFile( __dirname + '/index.html');
 });
 
@@ -30,7 +30,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 //setting up the route for the post request to get output from GPT
 
-app.post("/post", async (req,res) => {
+app.post(__dirname+"/post", async (req,res) => {
     let data = req.body;
 
     /*
