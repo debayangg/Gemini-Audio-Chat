@@ -31,7 +31,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 //setting up the route for the post request to get output from GPT
 
-app.post(__dirname+"/post", async (req,res) => {
+app.post(__dirname+"/", async (req,res) => {
     let data = req.body;
 
     /*
