@@ -10,14 +10,14 @@ let app = express();
 app.use(express.json());
 app.use(cors());
 //setting up the local server
-let port = 3000;
+let port = process.env.PORT || 3000;
 app.listen(port,() => {
     console.log(`Server running on port ${port}`);
 });
 
 
 //setting up the route for the home page
-const __dirname = "https://debayangg.github.io/GPT-Bot/";
+const __dirname = process.cwd();
 
 //setting up the route for the home page
 app.get("/", (req,res) => {
@@ -154,4 +154,36 @@ app.post("/", async (req,res) => {
     });
      
     res.end();
+});
+
+app.post("/post", async (req,res) => {
+    let data = req.body;
+
+    /*
+    Creates a request to openai's API to get the output from GPT-3.5-turbo
+    completion - stores json from api call
+    */
+
+    const configuration = new Configuration({
+    apiKey: OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
+    const completion = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    messages: [{"role": "system", "content": "You are a helpful assistant."}, {role: "user", content: data['text']}],
+    });
+    
+    let text = completion.data.choices[0].message['content'];
+    const urls = await google_tts.getAllAudioBase64(text, {
+        lang: 'en',
+        slow: false,
+        host: 'https://translate.google.com',
+    });
+ 
+   res.json({
+        'result': urls
+    });
+     
+    res.end();
+});
 });
