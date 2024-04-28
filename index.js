@@ -1,56 +1,41 @@
 //writing code necessary for express to run and parse JSON
-import express from "express";
-import 'dotenv/config';
-import cors from 'cors';
-import * as google_tts from 'google-tts-api';
+const express = require("express");
+require('dotenv').config();
+const cors = require('cors');
+const google_tts = require('google-tts-api');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
 let app = express();
 app.use(express.json());
 app.use(cors());
 
-//setting up the local server
 let port = process.env.PORT || 3000;
-app.listen(port,() => {
-    console.log(`Server running on port ${port}`);
+const server = app.listen(port,() => {
 });
-
-
-//setting up the route for the home page
-const __dirname = process.cwd();
 
 //setting up the route for the home page
 app.get("/", (req,res) => {
     res.sendFile( __dirname + '/index.html');
 });
 
-//Setting up gpt-3.5-turbo
-import {Configuration, OpenAIApi } from "openai";
-
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-//setting up the route for the post request to get output from GPT
+//setting up the route for the post request to get output from Gemini
 
 app.post("/post", async (req,res) => {
     let data = req.body;
 
     /*
-    Creates a request to openai's API to get the output from GPT-3.5-turbo
-    completion - stores json from api call
+    Creates a request to Google's API to get the output from Gemini Pro model
     */
 
-    const configuration = new Configuration({
-    apiKey: OPENAI_API_KEY,
-    });
-    const openai = new OpenAIApi(configuration);
-    const completion = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: [{"role": "system", "content": "You are a helpful assistant."}, 
-    {role: "user", content: data['text'],}],
-    });
+    const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+    const result = await model.generateContent(data.text);
+    const response = await result.response;
+
     
-    let text = completion.data.choices[0].message['content'];
+    let text = response.text();
     const urls = await google_tts.getAllAudioBase64(text, {
         lang: 'en',
         slow: false,
@@ -63,3 +48,9 @@ app.post("/post", async (req,res) => {
      
     res.end();
 });
+
+app.closeServer = function(){
+    server.close();
+};
+
+module.exports = app;
