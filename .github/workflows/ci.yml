@@ -8,6 +8,7 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    environment : render
     steps:
       - uses: actions/checkout@v3
       - name: Test
