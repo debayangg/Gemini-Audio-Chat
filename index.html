@@ -4,16 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Voice Input Example</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+    }
+    #start-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 320px;
+      height: 80px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    #start-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    #start-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    #result {
+      margin-top: 20px;
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <button id="start-btn" style="width: 400px;height: 100px;position: absolute;top:0;bottom: 0;left: 0;right: 0;margin: auto;font-size: large;">
-    Click to start speaking
-  </button>
-  
-  <div id="result"></div>
+  <div>
+    <button id="start-btn">🎤 Click to Start Speaking</button>
+    <div id="result"></div>
+  </div>
 
   <script>
-
     // Check if the browser supports the Web Speech API
     if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
       // Create a new SpeechRecognition object
@@ -25,25 +65,24 @@
       // Define the event handler for the 'result' event
       recognition.onresult = async (event) => {
         let result = event.results[0][0].transcript;
-        console.log(window.location.href+`post`);
-        //post request to server to get response from the server
-        await fetch(window.location.href+`post`, {
+        console.log(window.location.href + `post`);
+
+        // Post request to server to get response
+        await fetch(window.location.href + `post`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({"text":result})
+          body: JSON.stringify({ "text": result })
         })
-
-        //handles the response from the server and converts it into audio
-        .then(res => res.json())
-        .then((res)=>{
-          let data = res.result;
-          for(let i=0;i<data.length;i++){
-            let audio = new Audio("data:audio/mp3;base64,"+data[i].base64);
-            audio.play();
-          }
-        });
+          .then(res => res.json())
+          .then((res) => {
+            let data = res.result;
+            for (let i = 0; i < data.length; i++) {
+              let audio = new Audio("data:audio/mp3;base64," + data[i].base64);
+              audio.play();
+            }
+          });
       };
 
       // Define the event handler for the 'error' event
@@ -55,10 +94,8 @@
       document.getElementById('start-btn').addEventListener('click', () => {
         recognition.start();
       });
-      
-    } 
-    
-    else {
+
+    } else {
       // Speech recognition not supported
       document.getElementById('result').textContent = "Speech recognition is not supported in your browser.";
     }
