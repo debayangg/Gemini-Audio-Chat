@@ -3,17 +3,30 @@
  <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Voice Input Example</title>
+  <title>Gemini Voice Chat</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #2d9bf0, #203864);
+      color: #fff;
+      text-align: center;
+    }
+    header {
+      width: 100%;
+      padding: 20px;
+      background: #1a2938;
+      color: #00d4ff;
+      font-size: 28px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      text-align: center;
     }
     #start-btn {
       display: flex;
@@ -21,53 +34,133 @@
       justify-content: center;
       width: 320px;
       height: 80px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       color: #fff;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
       border: none;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
       cursor: pointer;
       transition: all 0.3s ease;
+      margin-top: 20px;
     }
     #start-btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     }
     #start-btn:active {
       transform: translateY(0);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
     #result {
       margin-top: 20px;
-      color: #fff;
-      font-size: 16px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    #result.error {
+      color: #ff4d4d;
+      font-weight: bold;
+      font-size: 20px;
       text-align: center;
+    }
+    .wave {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .wave span {
+      display: inline-block;
+      width: 8px;
+      height: 30px;
+      background: #fff;
+      animation: wave 1.2s infinite ease-in-out;
+    }
+    .wave span:nth-child(1) {
+      animation-delay: -1.1s;
+    }
+    .wave span:nth-child(2) {
+      animation-delay: -1s;
+    }
+    .wave span:nth-child(3) {
+      animation-delay: -0.9s;
+    }
+    .wave span:nth-child(4) {
+      animation-delay: -0.8s;
+    }
+    .wave span:nth-child(5) {
+      animation-delay: -0.7s;
+    }
+
+    @keyframes wave {
+      0%, 100% {
+        transform: scaleY(0.4);
+      }
+      50% {
+        transform: scaleY(1);
+      }
+    }
+    .hidden {
+      display: none;
+    }
+    .description {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 30px;
+      font-size: 20px;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    .highlight {
+      color: #8f94fb;
+      font-weight: bold;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
-  <div>
-    <button id="start-btn">🎤 Click to Start Speaking</button>
+  <header>Gemini Voice Chat</header>
+  <div class="description">
+    <p>Welcome to the <span class="highlight">Gemini Voice Chat</span>! Engage in a continuous, real-time conversation with the Gemini API using your voice.</p>
+  </div>
+  <div class="button-container">
+    <button id="start-btn">🎤 Click to Start Chatting</button>
     <div id="result"></div>
+    <div class="wave hidden" id="wave">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
   </div>
 
   <script>
-    // Check if the browser supports the Web Speech API
     if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      // Create a new SpeechRecognition object
       let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-
-      // Set the language for speech recognition
       recognition.lang = 'en-US';
+      recognition.continuous = true; // Enable continuous listening
+      const waveElement = document.getElementById('wave');
+      const resultElement = document.getElementById('result');
+      const startButton = document.getElementById('start-btn');
 
-      // Define the event handler for the 'result' event
+      recognition.onstart = () => {
+        waveElement.classList.remove('hidden');
+        resultElement.textContent = "Listening...";
+      };
+
       recognition.onresult = async (event) => {
-        let result = event.results[0][0].transcript;
+        let result = event.results[event.results.length - 1][0].transcript;
+        resultElement.textContent = `Processing: "${result}"`;
         console.log(window.location.href + `post`);
 
-        // Post request to server to get response
         await fetch(window.location.href + `post`, {
           method: 'POST',
           headers: {
@@ -78,26 +171,36 @@
           .then(res => res.json())
           .then((res) => {
             let data = res.result;
+            waveElement.classList.add('hidden');
+            resultElement.textContent = "Playing audio...";
             for (let i = 0; i < data.length; i++) {
               let audio = new Audio("data:audio/mp3;base64," + data[i].base64);
               audio.play();
             }
+            resultElement.textContent = "Listening...";
+            waveElement.classList.remove('hidden');
           });
       };
 
-      // Define the event handler for the 'error' event
       recognition.onerror = (event) => {
-        console.log('Error occurred in recognition: ' + event.error);
+        waveElement.classList.add('hidden');
+        resultElement.textContent = `Error: ${event.error}`;
+        resultElement.classList.add('error');
       };
 
-      // Start the speech recognition when the button is clicked
-      document.getElementById('start-btn').addEventListener('click', () => {
+      recognition.onend = () => {
+        waveElement.classList.add('hidden');
+        resultElement.textContent = "Tap the button to start again.";
+      };
+
+      startButton.addEventListener('click', () => {
         recognition.start();
       });
 
     } else {
-      // Speech recognition not supported
-      document.getElementById('result').textContent = "Speech recognition is not supported in your browser.";
+      const resultElement = document.getElementById('result');
+      resultElement.textContent = "Speech recognition is not supported in your browser.";
+      resultElement.classList.add('error');
     }
   </script>
 </body>
